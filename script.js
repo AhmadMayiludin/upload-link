@@ -1,5 +1,12 @@
-// Key penyimpanan di LocalStorage
-const STORAGE_KEY = 'user_saved_links';
+// Key penyimpanan di LocalStorage (v2 agar perangkat langsung memuat link baru)
+const STORAGE_KEY = 'user_saved_links_v2';
+
+// Daftar 3 Link TikTok Utama Milik Anda
+const DEFAULT_LINKS = [
+  { id: 1, title: 'Video TikTok 1', url: 'https://vt.tiktok.com/ZS9AdUEBn2xqj-WhAzd/' },
+  { id: 2, title: 'Video TikTok 2', url: 'https://vt.tiktok.com/ZS9Adaspjy7MW-zHVoM/' },
+  { id: 3, title: 'Video TikTok 3', url: 'https://vt.tiktok.com/ZS9AdvMmS4BjS-L337z/' }
+];
 
 // State aplikasi
 let links = [];
@@ -13,6 +20,7 @@ const emptyState = document.getElementById('emptyState');
 const linkCount = document.getElementById('linkCount');
 const searchInput = document.getElementById('searchInput');
 const btnClearAll = document.getElementById('btnClearAll');
+const btnResetDefault = document.getElementById('btnResetDefault');
 const btnExport = document.getElementById('btnExport');
 const toast = document.getElementById('toast');
 
@@ -44,14 +52,11 @@ function loadLinks() {
       links = JSON.parse(data);
     } catch (e) {
       console.error('Gagal membaca data dari localStorage:', e);
-      links = [];
+      links = [...DEFAULT_LINKS];
     }
   } else {
-    // Contoh data bawaan awal jika baru pertama kali buka
-    links = [
-      { id: Date.now() - 2000, title: 'Google', url: 'https://google.com' },
-      { id: Date.now() - 1000, title: 'YouTube', url: 'https://youtube.com' }
-    ];
+    // Muat 3 link TikTok bawaan pengguna secara otomatis
+    links = [...DEFAULT_LINKS];
     saveLinks();
   }
   renderLinks();
@@ -223,6 +228,16 @@ function clearAllLinks() {
   }
 }
 
+// Kembalikan ke 3 link TikTok awal
+function resetDefaultLinks() {
+  const confirmReset = confirm('Kembalikan ke 3 link TikTok awal?');
+  if (confirmReset) {
+    links = [...DEFAULT_LINKS];
+    saveLinks();
+    showToast('Berhasil dikembalikan ke 3 link awal!');
+  }
+}
+
 // Filter / Cari link
 function filterLinks() {
   const query = searchInput.value.toLowerCase().trim();
@@ -261,6 +276,9 @@ function exportLinksAsText() {
 linkForm.addEventListener('submit', addLink);
 searchInput.addEventListener('input', filterLinks);
 btnClearAll.addEventListener('click', clearAllLinks);
+if (btnResetDefault) {
+  btnResetDefault.addEventListener('click', resetDefaultLinks);
+}
 btnExport.addEventListener('click', exportLinksAsText);
 
 // Inisialisasi saat web dimuat
