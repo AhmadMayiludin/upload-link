@@ -136,6 +136,45 @@ body {
   line-height: 1.5;
 }
 
+/* TikTok In-App Browser Warning Banner */
+.tiktok-banner {
+  display: none;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 0.85rem;
+  color: #fef3c7;
+  line-height: 1.45;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.tiktok-banner.show {
+  display: flex;
+}
+
+.tiktok-banner .banner-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.tiktok-banner strong {
+  display: block;
+  color: #fbbf24;
+  margin-bottom: 2px;
+  font-size: 0.9rem;
+}
+
+.tiktok-banner p {
+  margin: 0;
+  color: #fde68a;
+}
+
 /* Cards */
 .card {
   background: var(--card-bg);

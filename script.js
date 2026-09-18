@@ -13,8 +13,34 @@ const linkCount = document.getElementById('linkCount');
 const searchInput = document.getElementById('searchInput');
 const btnExport = document.getElementById('btnExport');
 const toast = document.getElementById('toast');
+const tiktokBanner = document.getElementById('tiktokBanner');
 
 // === Helper Functions ===
+
+// Deteksi jika website dibuka dari dalam aplikasi TikTok (In-App Browser)
+function checkInAppBrowser() {
+  const ua = navigator.userAgent || navigator.vendor || window.opera || '';
+  const isTikTok = /musical_ly|ByteDance|TikTok/i.test(ua);
+  if (isTikTok && tiktokBanner) {
+    tiktokBanner.classList.add('show');
+  }
+}
+
+// Buka link langsung (Deep-link Intent di Android agar langsung memanggil aplikasi TikTok)
+function openDirectLink(url) {
+  const ua = navigator.userAgent || navigator.vendor || window.opera || '';
+  const isAndroid = /android/i.test(ua);
+
+  if (isAndroid) {
+    // Pada Android, gunakan intent URI agar memicu pembukaan aplikasi TikTok resmi
+    const cleanPath = url.replace(/^https?:\/\//, '');
+    const intentUrl = `intent://${cleanPath}#Intent;scheme=https;package=com.zhiliaoapp.musically;S.browser_fallback_url=${encodeURIComponent(url)};end;`;
+    window.location.href = intentUrl;
+  } else {
+    // Di iOS atau desktop, arahkan langsung tanpa target="_blank"
+    window.location.href = url;
+  }
+}
 
 // Tampilkan Toast Notifikasi
 function showToast(message) {
@@ -45,6 +71,7 @@ function renderLinks(filteredList = null) {
   listToRender.forEach((item, index) => {
     const li = document.createElement('li');
     li.className = 'link-item';
+    li.style.cursor = 'pointer';
 
     // Nomor urut dinamis (1, 2, 3...)
     const numberBadge = document.createElement('div');
@@ -62,9 +89,12 @@ function renderLinks(filteredList = null) {
     const urlEl = document.createElement('a');
     urlEl.className = 'link-url';
     urlEl.href = item.url;
-    urlEl.target = '_blank';
-    urlEl.rel = 'noopener noreferrer';
     urlEl.textContent = item.url;
+    // Hindari target="_blank" agar tidak diblokir oleh in-app browser TikTok
+    urlEl.addEventListener('click', (e) => {
+      e.preventDefault();
+      openDirectLink(item.url);
+    });
 
     content.appendChild(titleEl);
     content.appendChild(urlEl);
@@ -73,21 +103,23 @@ function renderLinks(filteredList = null) {
     const actions = document.createElement('div');
     actions.className = 'link-actions';
 
-    // Tombol Buka
-    const btnOpen = document.createElement('a');
+    // Tombol Buka (Memanggil openDirectLink)
+    const btnOpen = document.createElement('button');
     btnOpen.className = 'action-btn btn-open';
-    btnOpen.href = item.url;
-    btnOpen.target = '_blank';
-    btnOpen.rel = 'noopener noreferrer';
     btnOpen.title = 'Buka di TikTok';
     btnOpen.innerHTML = '↗';
+    btnOpen.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openDirectLink(item.url);
+    });
 
     // Tombol Salin
     const btnCopy = document.createElement('button');
     btnCopy.className = 'action-btn btn-copy';
     btnCopy.title = 'Salin link';
     btnCopy.innerHTML = '📋';
-    btnCopy.addEventListener('click', () => {
+    btnCopy.addEventListener('click', (e) => {
+      e.stopPropagation();
       navigator.clipboard.writeText(item.url).then(() => {
         showToast('Link berhasil disalin ke clipboard!');
       }).catch(() => {
@@ -101,6 +133,13 @@ function renderLinks(filteredList = null) {
     li.appendChild(numberBadge);
     li.appendChild(content);
     li.appendChild(actions);
+
+    // Klik seluruh kartu untuk langsung membuka link
+    li.addEventListener('click', (e) => {
+      if (!e.target.closest('.btn-copy')) {
+        openDirectLink(item.url);
+      }
+    });
 
     linkList.appendChild(li);
   });
@@ -150,5 +189,6 @@ if (btnExport) {
 
 // Inisialisasi saat web dimuat
 document.addEventListener('DOMContentLoaded', () => {
+  checkInAppBrowser();
   renderLinks();
 });
