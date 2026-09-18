@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simpan Link - Daftar Link Praktis</title>
+  <meta name="description" content="Aplikasi sederhana untuk menyimpan dan mengelola daftar link secara rapi tanpa database.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="background-decor">
+    <div class="decor-circle circle-1"></div>
+    <div class="decor-circle circle-2"></div>
+  </div>
+
+  <main class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="badge">🌐 Link Keeper</div>
+      <h1>Daftar Link Saya</h1>
+      <p class="subtitle">Simpan link penting Anda dengan rapi. Tersimpan otomatis di perangkat Anda.</p>
+    </header>
+
+    <!-- Form Input Link -->
+    <section class="card input-card">
+      <form id="linkForm" class="link-form">
+        <div class="form-group">
+          <label for="linkUrl">URL / Tautan Link <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔗</span>
+            <input 
+              type="text" 
+              id="linkUrl" 
+              placeholder="Contoh: google.com atau https://youtube.com" 
+              required
+              autocomplete="off"
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="linkTitle">Judul / Catatan Singkat <span class="optional">(Opsional)</span></label>
+          <div class="input-wrapper">
+            <span class="input-icon">✏️</span>
+            <input 
+              type="text" 
+              id="linkTitle" 
+              placeholder="Contoh: Belajar Coding, Portal Kerja, dll."
+              autocomplete="off"
+            >
+          </div>
+        </div>
+
+        <button type="submit" id="btnAdd" class="btn btn-primary">
+          <span class="btn-icon">+</span> Tambah Link
+        </button>
+      </form>
+    </section>
+
+    <!-- Kontrol & Filter -->
+    <section class="list-controls">
+      <div class="count-badge">
+        Total: <span id="linkCount">0</span> Link
+      </div>
+      <div class="actions-right">
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="Cari link..." />
+        </div>
+        <button id="btnClearAll" class="btn btn-sm btn-outline-danger" title="Hapus semua link">
+          🗑️ Bersihkan Semua
+        </button>
+      </div>
+    </section>
+
+    <!-- Daftar Link -->
+    <section class="card list-card">
+      <div id="emptyState" class="empty-state">
+        <div class="empty-icon">📁</div>
+        <h3>Belum Ada Link yang Tersimpan</h3>
+        <p>Masukkan link pertama Anda melalui formulir di atas!</p>
+      </div>
+
+      <ol id="linkList" class="link-list"></ol>
+    </section>
+
+    <!-- Backup / Export -->
+    <section class="footer-actions">
+      <button id="btnExport" class="btn-text">📥 Salin Semua Link (Teks)</button>
+      <span class="divider">•</span>
+      <span class="status-tip">Data disimpan lokal di browser (tanpa database)</span>
+    </section>
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">Link berhasil disalin!</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
