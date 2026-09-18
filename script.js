@@ -26,18 +26,25 @@ function checkInAppBrowser() {
   }
 }
 
-// Buka link langsung (Deep-link Intent di Android agar langsung memanggil aplikasi TikTok)
+// Buka link langsung (Universal Android Intent & Auto-copy)
 function openDirectLink(url) {
   const ua = navigator.userAgent || navigator.vendor || window.opera || '';
   const isAndroid = /android/i.test(ua);
 
+  // Otomatis salin link ke clipboard untuk kenyamanan pengguna
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('Membuka TikTok... (Link disalin)');
+    }).catch(() => {});
+  }
+
   if (isAndroid) {
-    // Pada Android, gunakan intent URI agar memicu pembukaan aplikasi TikTok resmi
     const cleanPath = url.replace(/^https?:\/\//, '');
-    const intentUrl = `intent://${cleanPath}#Intent;scheme=https;package=com.zhiliaoapp.musically;S.browser_fallback_url=${encodeURIComponent(url)};end;`;
+    // Gunakan intent universal tanpa mengunci package khusus agar tidak error "Tindakan tidak dapat diselesaikan"
+    const intentUrl = `intent://${cleanPath}#Intent;scheme=https;end;`;
     window.location.href = intentUrl;
   } else {
-    // Di iOS atau desktop, arahkan langsung tanpa target="_blank"
+    // Di iOS atau desktop, arahkan langsung
     window.location.href = url;
   }
 }

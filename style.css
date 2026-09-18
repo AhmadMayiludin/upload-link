@@ -138,7 +138,7 @@ body {
 
 /* TikTok In-App Browser Warning Banner */
 .tiktok-banner {
-  display: none;
+  display: flex;
   background: rgba(245, 158, 11, 0.12);
   border: 1px solid rgba(245, 158, 11, 0.35);
   border-radius: var(--radius-md);
@@ -150,10 +150,6 @@ body {
   line-height: 1.45;
   box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
   animation: fadeIn 0.3s ease-out;
-}
-
-.tiktok-banner.show {
-  display: flex;
 }
 
 .tiktok-banner .banner-icon {
