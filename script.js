@@ -1,39 +1,20 @@
-// Key penyimpanan di LocalStorage (v2 agar perangkat langsung memuat link baru)
-const STORAGE_KEY = 'user_saved_links_v2';
-
-// Daftar 3 Link TikTok Utama Milik Anda
-const DEFAULT_LINKS = [
+// Daftar 4 Link TikTok Utama Milik Anda
+const links = [
   { id: 1, title: 'Video TikTok 1', url: 'https://vt.tiktok.com/ZS9AdUEBn2xqj-WhAzd/' },
   { id: 2, title: 'Video TikTok 2', url: 'https://vt.tiktok.com/ZS9Adaspjy7MW-zHVoM/' },
-  { id: 3, title: 'Video TikTok 3', url: 'https://vt.tiktok.com/ZS9AdvMmS4BjS-L337z/' }
+  { id: 3, title: 'Video TikTok 3', url: 'https://vt.tiktok.com/ZS9AdvMmS4BjS-L337z/' },
+  { id: 4, title: 'Video TikTok 4', url: 'https://vt.tiktok.com/ZS9AdcMaRGaAL-TBsVX/' }
 ];
 
-// State aplikasi
-let links = [];
-
 // DOM Elements
-const linkForm = document.getElementById('linkForm');
-const linkUrlInput = document.getElementById('linkUrl');
-const linkTitleInput = document.getElementById('linkTitle');
 const linkList = document.getElementById('linkList');
 const emptyState = document.getElementById('emptyState');
 const linkCount = document.getElementById('linkCount');
 const searchInput = document.getElementById('searchInput');
-const btnClearAll = document.getElementById('btnClearAll');
-const btnResetDefault = document.getElementById('btnResetDefault');
 const btnExport = document.getElementById('btnExport');
 const toast = document.getElementById('toast');
 
 // === Helper Functions ===
-
-// Normalisasi URL (menambahkan https:// jika tidak ada protokol)
-function normalizeUrl(url) {
-  let cleanUrl = url.trim();
-  if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
-    cleanUrl = 'https://' + cleanUrl;
-  }
-  return cleanUrl;
-}
 
 // Tampilkan Toast Notifikasi
 function showToast(message) {
@@ -44,48 +25,17 @@ function showToast(message) {
   }, 2500);
 }
 
-// Mengambil data dari LocalStorage
-function loadLinks() {
-  const data = localStorage.getItem(STORAGE_KEY);
-  if (data) {
-    try {
-      links = JSON.parse(data);
-    } catch (e) {
-      console.error('Gagal membaca data dari localStorage:', e);
-      links = [...DEFAULT_LINKS];
-    }
-  } else {
-    // Muat 3 link TikTok bawaan pengguna secara otomatis
-    links = [...DEFAULT_LINKS];
-    saveLinks();
-  }
-  renderLinks();
-}
-
-// Menyimpan data ke LocalStorage
-function saveLinks() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(links));
-  renderLinks();
-}
-
 // Render daftar link ke layar
 function renderLinks(filteredList = null) {
   const listToRender = filteredList !== null ? filteredList : links;
   linkList.innerHTML = '';
 
   // Update total badge
-  linkCount.textContent = links.length;
+  linkCount.textContent = listToRender.length;
 
-  // Toggle empty state
+  // Toggle empty state saat pencarian tidak menemukan hasil
   if (listToRender.length === 0) {
     emptyState.classList.add('active');
-    if (links.length > 0 && filteredList !== null) {
-      emptyState.querySelector('h3').textContent = 'Tidak Ditemukan';
-      emptyState.querySelector('p').textContent = 'Tidak ada link yang sesuai dengan pencarian Anda.';
-    } else {
-      emptyState.querySelector('h3').textContent = 'Belum Ada Link yang Tersimpan';
-      emptyState.querySelector('p').textContent = 'Masukkan link pertama Anda melalui formulir di atas!';
-    }
     return;
   } else {
     emptyState.classList.remove('active');
@@ -119,7 +69,7 @@ function renderLinks(filteredList = null) {
     content.appendChild(titleEl);
     content.appendChild(urlEl);
 
-    // Tombol Aksi (Buka, Salin, Hapus)
+    // Tombol Aksi (Hanya Buka & Salin)
     const actions = document.createElement('div');
     actions.className = 'link-actions';
 
@@ -129,7 +79,7 @@ function renderLinks(filteredList = null) {
     btnOpen.href = item.url;
     btnOpen.target = '_blank';
     btnOpen.rel = 'noopener noreferrer';
-    btnOpen.title = 'Buka di tab baru';
+    btnOpen.title = 'Buka di TikTok';
     btnOpen.innerHTML = '↗';
 
     // Tombol Salin
@@ -145,18 +95,8 @@ function renderLinks(filteredList = null) {
       });
     });
 
-    // Tombol Hapus
-    const btnDelete = document.createElement('button');
-    btnDelete.className = 'action-btn btn-delete';
-    btnDelete.title = 'Hapus link';
-    btnDelete.innerHTML = '✕';
-    btnDelete.addEventListener('click', () => {
-      deleteLink(item.id);
-    });
-
     actions.appendChild(btnOpen);
     actions.appendChild(btnCopy);
-    actions.appendChild(btnDelete);
 
     li.appendChild(numberBadge);
     li.appendChild(content);
@@ -164,78 +104,6 @@ function renderLinks(filteredList = null) {
 
     linkList.appendChild(li);
   });
-}
-
-// Tambah Link baru
-function addLink(e) {
-  e.preventDefault();
-
-  const rawUrl = linkUrlInput.value.trim();
-  const rawTitle = linkTitleInput.value.trim();
-
-  if (!rawUrl) return;
-
-  const validUrl = normalizeUrl(rawUrl);
-
-  // Jika judul kosong, gunakan nama domain atau URL singkat
-  let displayTitle = rawTitle;
-  if (!displayTitle) {
-    try {
-      const urlObj = new URL(validUrl);
-      displayTitle = urlObj.hostname.replace('www.', '');
-    } catch {
-      displayTitle = rawUrl;
-    }
-  }
-
-  const newLink = {
-    id: Date.now(),
-    title: displayTitle,
-    url: validUrl
-  };
-
-  // Tambahkan ke awal atau akhir list (kita tambahkan ke akhir agar urutan 1, 2, 3 konsisten)
-  links.push(newLink);
-  saveLinks();
-
-  // Reset form
-  linkUrlInput.value = '';
-  linkTitleInput.value = '';
-  linkUrlInput.focus();
-
-  showToast('Link berhasil ditambahkan!');
-}
-
-// Hapus satu link
-function deleteLink(id) {
-  links = links.filter(item => item.id !== id);
-  saveLinks();
-  showToast('Link dihapus.');
-}
-
-// Hapus semua link
-function clearAllLinks() {
-  if (links.length === 0) {
-    showToast('Tidak ada link untuk dihapus.');
-    return;
-  }
-
-  const confirmClear = confirm('Apakah Anda yakin ingin menghapus SEMUA link yang tersimpan?');
-  if (confirmClear) {
-    links = [];
-    saveLinks();
-    showToast('Semua link telah dihapus.');
-  }
-}
-
-// Kembalikan ke 3 link TikTok awal
-function resetDefaultLinks() {
-  const confirmReset = confirm('Kembalikan ke 3 link TikTok awal?');
-  if (confirmReset) {
-    links = [...DEFAULT_LINKS];
-    saveLinks();
-    showToast('Berhasil dikembalikan ke 3 link awal!');
-  }
 }
 
 // Filter / Cari link
@@ -266,20 +134,21 @@ function exportLinksAsText() {
   }).join('\n');
 
   navigator.clipboard.writeText(textData).then(() => {
-    showToast('Semua link disalin sebagai format daftar teks!');
+    showToast('Semua 4 link disalin sebagai daftar teks!');
   }).catch(() => {
     showToast('Gagal menyalin data.');
   });
 }
 
 // === Event Listeners ===
-linkForm.addEventListener('submit', addLink);
-searchInput.addEventListener('input', filterLinks);
-btnClearAll.addEventListener('click', clearAllLinks);
-if (btnResetDefault) {
-  btnResetDefault.addEventListener('click', resetDefaultLinks);
+if (searchInput) {
+  searchInput.addEventListener('input', filterLinks);
 }
-btnExport.addEventListener('click', exportLinksAsText);
+if (btnExport) {
+  btnExport.addEventListener('click', exportLinksAsText);
+}
 
 // Inisialisasi saat web dimuat
-document.addEventListener('DOMContentLoaded', loadLinks);
+document.addEventListener('DOMContentLoaded', () => {
+  renderLinks();
+});

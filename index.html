@@ -19,46 +19,10 @@
   <main class="app-container">
     <!-- Header -->
     <header class="app-header">
-      <div class="badge">🌐 Link Keeper</div>
+      <div class="badge">🎵 TikTok Links</div>
       <h1>Daftar Link Saya</h1>
-      <p class="subtitle">Simpan link penting Anda dengan rapi. Tersimpan otomatis di perangkat Anda.</p>
+      <p class="subtitle">Kumpulan link video TikTok pilihan. Klik untuk langsung menonton atau salin link.</p>
     </header>
-
-    <!-- Form Input Link -->
-    <section class="card input-card">
-      <form id="linkForm" class="link-form">
-        <div class="form-group">
-          <label for="linkUrl">URL / Tautan Link <span class="required">*</span></label>
-          <div class="input-wrapper">
-            <span class="input-icon">🔗</span>
-            <input 
-              type="text" 
-              id="linkUrl" 
-              placeholder="Contoh: google.com atau https://youtube.com" 
-              required
-              autocomplete="off"
-            >
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="linkTitle">Judul / Catatan Singkat <span class="optional">(Opsional)</span></label>
-          <div class="input-wrapper">
-            <span class="input-icon">✏️</span>
-            <input 
-              type="text" 
-              id="linkTitle" 
-              placeholder="Contoh: Belajar Coding, Portal Kerja, dll."
-              autocomplete="off"
-            >
-          </div>
-        </div>
-
-        <button type="submit" id="btnAdd" class="btn btn-primary">
-          <span class="btn-icon">+</span> Tambah Link
-        </button>
-      </form>
-    </section>
 
     <!-- Kontrol & Filter -->
     <section class="list-controls">
@@ -69,21 +33,15 @@
         <div class="search-box">
           <input type="text" id="searchInput" placeholder="Cari link..." />
         </div>
-        <button id="btnResetDefault" class="btn btn-sm btn-outline-secondary" title="Kembalikan ke 3 link awal">
-          🔄 Reset Awal
-        </button>
-        <button id="btnClearAll" class="btn btn-sm btn-outline-danger" title="Hapus semua link">
-          🗑️ Bersihkan Semua
-        </button>
       </div>
     </section>
 
     <!-- Daftar Link -->
     <section class="card list-card">
       <div id="emptyState" class="empty-state">
-        <div class="empty-icon">📁</div>
-        <h3>Belum Ada Link yang Tersimpan</h3>
-        <p>Masukkan link pertama Anda melalui formulir di atas!</p>
+        <div class="empty-icon">🔍</div>
+        <h3>Tidak Ditemukan</h3>
+        <p>Tidak ada link yang sesuai dengan pencarian Anda.</p>
       </div>
 
       <ol id="linkList" class="link-list"></ol>
@@ -93,7 +51,7 @@
     <section class="footer-actions">
       <button id="btnExport" class="btn-text">📥 Salin Semua Link (Teks)</button>
       <span class="divider">•</span>
-      <span class="status-tip">Data disimpan lokal di browser (tanpa database)</span>
+      <span class="status-tip">Klik ↗ untuk membuka langsung di TikTok</span>
     </section>
   </main>
 
